@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Una invitación al teatro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --curtain-dark:#3a0b1a;
+    --curtain-mid:#6b1029;
+    --curtain-light:#8f1c3a;
+    --gold:#cf9e4d;
+    --gold-light:#e8c987;
+    --cream:#f4ead4;
+    --ink:#2a1810;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;
+    min-height:100vh;
+    background:var(--curtain-dark);
+    font-family:'EB Garamond', serif;
+    overflow-x:hidden;
+  }
+  body{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    padding:24px;
+    position:relative;
+  }
+
+  /* Velvet curtains */
+  .curtain{
+    position:fixed;
+    top:0;
+    height:100vh;
+    width:26vw;
+    min-width:140px;
+    z-index:1;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        var(--curtain-mid) 0px,
+        var(--curtain-light) 18px,
+        var(--curtain-mid) 36px,
+        var(--curtain-dark) 54px
+      );
+    box-shadow: inset 0 0 80px rgba(0,0,0,0.6);
+    transition: transform 1.4s cubic-bezier(.65,0,.35,1);
+  }
+  .curtain::after{
+    content:"";
+    position:absolute;
+    top:0; left:0; right:0; height:60px;
+    background:linear-gradient(180deg, rgba(0,0,0,0.5), transparent);
+  }
+  .curtain-left{ left:0; transform-origin:left center; }
+  .curtain-right{ right:0; transform-origin:right center; }
+  body.opened .curtain-left{ transform: translateX(-92%) scaleX(0.4); }
+  body.opened .curtain-right{ transform: translateX(92%) scaleX(0.4); }
+
+  .spotlight{
+    position:fixed;
+    top:-20%;
+    left:50%;
+    transform:translateX(-50%);
+    width:900px;
+    height:900px;
+    background:radial-gradient(circle, rgba(232,201,135,0.18) 0%, rgba(232,201,135,0.05) 40%, transparent 70%);
+    z-index:0;
+    pointer-events:none;
+  }
+
+  .stage{
+    position:relative;
+    z-index:2;
+    width:100%;
+    max-width:480px;
+  }
+
+  .ticket{
+    background: var(--cream);
+    color: var(--ink);
+    border-radius: 6px;
+    padding: 44px 36px 36px;
+    position:relative;
+    box-shadow:
+      0 30px 60px -15px rgba(0,0,0,0.6),
+      0 0 0 1px rgba(207,158,77,0.4);
+    text-align:center;
+    animation: rise 1.1s cubic-bezier(.2,.8,.2,1) both;
+    animation-delay: .3s;
+  }
+
+  @keyframes rise{
+    from{ opacity:0; transform: translateY(40px) scale(0.96); }
+    to{ opacity:1; transform: translateY(0) scale(1); }
+  }
+
+  .ticket::before, .ticket::after{
+    content:"";
+    position:absolute;
+    width:26px; height:26px;
+    background:var(--curtain-dark);
+    border-radius:50%;
+    top:50%;
+    transform:translateY(-50%);
+  }
+  .ticket::before{ left:-13px; }
+  .ticket::after{ right:-13px; }
+
+  .perforation{
+    position:absolute;
+    left:0; right:0;
+    top:112px;
+    border-top:2px dashed rgba(58,11,26,0.25);
+  }
+
+  .eyebrow{
+    font-family:'EB Garamond', serif;
+    font-style:italic;
+    letter-spacing:0.28em;
+    text-transform:uppercase;
+    font-size:12px;
+    color:var(--curtain-mid);
+    margin-bottom:10px;
+  }
+
+  h1{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:600;
+    font-size:clamp(34px, 8vw, 46px);
+    line-height:1.05;
+    margin:0 0 6px;
+    color:var(--curtain-dark);
+  }
+  h1 em{
+    font-style:italic;
+    color:var(--gold);
+    display:block;
+    font-size:0.6em;
+    font-weight:500;
+    margin-top:4px;
+  }
+
+  .divider{
+    width:56px;
+    height:2px;
+    background:var(--gold);
+    margin:18px auto;
+  }
+
+  .details{
+    margin-top:26px;
+    font-size:17px;
+    line-height:1.7;
+    color:var(--ink);
+  }
+  .details b{ color:var(--curtain-mid); }
+
+  .row{
+    display:flex;
+    justify-content:space-between;
+    text-align:left;
+    font-size:14px;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    color:var(--curtain-mid);
+    margin-top:26px;
+    padding-top:16px;
+    border-top:1px dashed rgba(58,11,26,0.25);
+    font-family:'EB Garamond', serif;
+  }
+  .row span:last-child{ color:var(--ink); text-transform:none; font-style:italic; }
+
+  .prompt{
+    margin-top:30px;
+    font-family:'Cormorant Garamond', serif;
+    font-size:22px;
+    color:var(--ink);
+  }
+
+  .buttons{
+    margin-top:22px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+    flex-wrap:wrap;
+    min-height:80px;
+  }
+
+  button{
+    border:none;
+    cursor:pointer;
+    font-family:'EB Garamond', serif;
+    font-weight:600;
+    letter-spacing:0.04em;
+    transition: all .25s cubic-bezier(.34,1.56,.64,1);
+    border-radius:999px;
+  }
+
+  #si{
+    background: linear-gradient(180deg, var(--gold-light), var(--gold));
+    color:var(--curtain-dark);
+    padding:14px 30px;
+    font-size:18px;
+    box-shadow:0 8px 20px rgba(207,158,77,0.45);
+  }
+  #si:hover{ filter:brightness(1.05); }
+
+  #no{
+    background:transparent;
+    color:var(--curtain-mid);
+    border:1.5px solid var(--curtain-mid);
+    padding:14px 26px;
+    font-size:16px;
+  }
+
+  .footer-note{
+    margin-top:22px;
+    font-size:12px;
+    color:#8a7b68;
+    font-style:italic;
+  }
+
+  /* Confirmation state */
+  .confirm{
+    display:none;
+    margin-top:26px;
+    font-family:'Cormorant Garamond', serif;
+    font-size:22px;
+    color:var(--curtain-mid);
+  }
+  .confirm a{
+    display:inline-block;
+    margin-top:14px;
+    background:#25D366;
+    color:white;
+    text-decoration:none;
+    padding:12px 24px;
+    border-radius:999px;
+    font-family:'EB Garamond', serif;
+    font-weight:600;
+    font-size:15px;
+    box-shadow:0 8px 18px rgba(37,211,102,0.4);
+  }
+
+  @media (max-width:520px){
+    .curtain{ width:14vw; min-width:60px; }
+    .ticket{ padding:34px 22px 28px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="curtain curtain-left"></div>
+<div class="curtain curtain-right"></div>
+<div class="spotlight"></div>
+
+<div class="stage">
+  <div class="ticket">
+    <div class="perforation"></div>
+    <div class="eyebrow">Boleto de admisión · Función especial</div>
+    <h1>Te invito al teatro<em>¿me acompañas?</em></h1>
+    <div class="divider"></div>
+
+    <div class="details">La pasaremos muy lindo c:</div>
+
+    <div class="row"><span>Fecha</span><span>Sábado 18</span></div>
+    <div class="row"><span>Función</span><span>El sueño de una noche de verano</span></div>
+    <div class="row"><span>Boletos</span><span>Ya reservados, solo falta tu Sí 😏</span></div>
+
+    <div id="ask">
+      <div class="prompt">¿Aceptas ir conmigo?</div>
+      <div class="buttons">
+        <button id="si" onclick="crecerSi()">Sí, acepto c:</button>
+        <button id="no" onclick="encogerNo()">No, porque no baño</button>
+      </div>
+      <div class="footer-note">(El NO es timido como yo :v)</div>
+    </div>
+
+    <div class="confirm" id="confirm">
+      Nos vemos el sabado C:<br>
+      Responder c:
+      <br>
+      <a id="waLink" href="#" target="_blank" rel="noopener">Enviar confirmación</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  let siScale = 1;
+  let noScale = 1;
+
+  function crecerSi(){
+    siScale += 0.28;
+    noScale = Math.max(0.35, noScale - 0.16);
+
+    const si = document.getElementById('si');
+    const no = document.getElementById('no');
+    si.style.transform = `scale(${siScale})`;
+    no.style.transform = `scale(${noScale})`;
+    no.style.opacity = Math.max(0.25, 1 - siScale * 0.15);
+
+    if(siScale >= 2.2){
+      aceptar();
+    }
+  }
+
+  function encogerNo(){
+    noScale = Math.max(0.3, noScale - 0.22);
+    siScale += 0.18;
+
+    const si = document.getElementById('si');
+    const no = document.getElementById('no');
+    si.style.transform = `scale(${siScale})`;
+    no.style.transform = `scale(${noScale})`;
+    no.style.opacity = Math.max(0.2, 1 - siScale * 0.15);
+
+    if(noScale <= 0.35 || siScale >= 2.2){
+      aceptar();
+    }
+  }
+
+  function aceptar(){
+    document.getElementById('ask').style.display = 'none';
+    const confirm = document.getElementById('confirm');
+    confirm.style.display = 'block';
+
+    const numero = "51946419138";
+    const mensaje = "Acepto, nos vemos el sábado C: <2";
+    const link = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+    document.getElementById('waLink').href = link;
+
+    setTimeout(()=>{ window.open(link, '_blank'); }, 600);
+  }
+
+  window.addEventListener('load', () => {
+    setTimeout(() => document.body.classList.add('opened'), 300);
+  });
+</script>
+
+</body>
+</html>
